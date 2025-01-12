@@ -38,42 +38,44 @@ To run this pipeline locally, you'll need to install
 Again, this setup seems heavy-handed, but this is because I want to make this project as self-contained as possible with a minimum of live vendor dependencies.
 
 ## Install and Run
-- Set up the ingestion pipeline
-  - Copy `variables.tf.example` to `variables.tf`
-    - Put in your GCP project name, as well as a bucket name where this project will put resources
-    - These two variables are *globally* unique, which is why I don't prepopulate this for you
-    - The other variables are locally namespaced, so their default values can be left as-is
-  - Ensure you're logged into GCP (`gcloud auth application-default login`) and have Terraform installed and active
-  - From the `terraform` subdirectory, run:
+
+### Set up the ingestion pipeline
+- Copy `variables.tf.example` to `variables.tf`
+  - Put in your GCP project name, as well as a bucket name where this project will put resources
+  - These two variables are *globally* unique, which is why I don't prepopulate this for you
+  - The other variables are locally namespaced, so their default values can be left as-is
+- Ensure you're logged into GCP (`gcloud auth application-default login`) and have Terraform installed and active
+- From the `terraform` subdirectory, run:
 ```
 terraform init
 terraform apply
 ```
-  - Inspect the Terraform plan to see what's being created, and enter `yes` if these resources look OK to you.
-  - Applying the plan will take a few minutes since it involves deploying a Cloud function
-  - After this is done, there will be an empty table in the `pipeline_demo` BigQuery dataset.
-- Add data
-  - Navigate to the Cloud Storage bucket created by Terraform and create a `data/` folder
-  - Drag-and-drop the `llm_logs.json` input data to that bucket and folder
-  - The finalization (ie. upload) of the object should trigger the Cloud Function to run.
-    - Inspect the Cloud Function logs if you want to make sure the function runs OK.
-  - After this is done, the table `pipeline_demo.raw_llm_logs` should contain the data as-ingested.
-- Transform the data
-  - Navigate to the `dbt` subdirectory of this repository
-  - Copy `profiles.yml.example` to `~/.dbt/profiles.yml`, and edit the `project:` value to contain your GCP project ID.
-  - Invoke `dbt run` from the `dbt subdirectory`
-  - This should create two tables in the `pipeline_demo` BigQuery dataset.  `pipeline_demo.llm_usage` is the "output", transformed table.
-  - This is still pretty granular, per-prompt level data. I don't think pre-aggregation is needed in the transformation layer, and we should do it in the presentation layer instead given the excellent performance of BigQuery at scale.
-- Visualize the data
-  - Navigate to the `evidence` subdirectory of this repository
-  - Run the following:
+- Inspect the Terraform plan to see what's being created, and enter `yes` if these resources look OK to you.
+- Applying the plan will take a few minutes since it involves deploying a Cloud function
+- After this is done, there will be an empty table in the `pipeline_demo` BigQuery dataset.
+### Add data
+- Navigate to the Cloud Storage bucket created by Terraform and create a `data/` folder
+- Drag-and-drop the `llm_logs.json` input data to that bucket and folder
+- The finalization (ie. upload) of the object should trigger the Cloud Function to run.
+  - Inspect the Cloud Function logs if you want to make sure the function runs OK.
+- After this is done, the table `pipeline_demo.raw_llm_logs` should contain the data as-ingested.
+### Transform the data
+- Navigate to the `dbt` subdirectory of this repository
+- Copy `profiles.yml.example` to `~/.dbt/profiles.yml`, and edit the `project:` value to contain your GCP project ID.
+- Invoke `dbt run` from the `dbt subdirectory`
+- This should create two tables in the `pipeline_demo` BigQuery dataset.  `pipeline_demo.llm_usage` is the "output", transformed table.
+- This is still pretty granular, per-prompt level data. I don't think pre-aggregation is needed in the transformation layer, and we should do iin the presentation layer instead given the excellent performance of BigQuery at scale.
+### Visualize the data
+- Navigate to the `evidence` subdirectory of this repository
+- Copy `evidence/sources/pipeline_demo/connection.yaml.example` to `connection.yaml` and populate the `projectID` value with your GCP Project ID
+- Run the following:
 ```
 npm install
 npm run sources
 npm run dev
 ```
-  - This will start a web server on localhost:3000 that is running Evidence, which serves flavoured Markdown inside the `evidence/pages` directory. Markdown pages corresponding to particular data visualziations can be created and edited there.
+- This will start a web server on localhost:3000 that is running Evidence, which serves flavoured Markdown inside the `evidence/pages`directory. Markdown pages corresponding to particular data visualziations can be created and edited there.
   - Obviously this visualization option isn't really for production purposes -- we'd want to deploy this to cloud infrastructure or run some other sort of BI tool in reality.
-  - Ctrl-C to exit the dev web server.
-- Cleaning up
+- Ctrl-C to exit the dev web server.
+### Cleaning up
   - Inside the `terraform` subdirectory, run `terraform destroy` and confirm destruction of the cloud resources created for this demo.
