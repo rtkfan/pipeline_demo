@@ -1,0 +1,23 @@
+variable "project_name" {
+  type    = string
+  default = "YOUR-PROJECT-NAME-HERE"
+  description = "GCP project in which resources will be created."
+}
+
+variable "bucket_name" {
+  type = string
+  default = "YOUR-BUCKET-NAME-HERE"
+  description = "(Globally unique) GCS bucket name. Using a variable so we don't need to hard-code in source."
+}
+
+variable "demo_alias" {
+  type = string
+  default = "pipeline-demo"
+  description = "Prefix used for resources created for this demo (eg. service accounts, cloud functions, etc.)"
+}
+
+variable "bigquery_dataset_name" {
+  type = string
+  default = "pipeline_demo"
+  description = "Name of the BigQuery dataset to create tables in; rename if desired/needed"
+}

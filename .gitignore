@@ -1,0 +1,16 @@
+# local env files
+**/.envrc
+*/.env
+
+# instance-specific Terraform files (including local state)
+# ie. assume this only runs locally -- Don't deploy this to production!
+terraform/variables.tf
+terraform/.terraform
+terraform/*.tfstate*
+
+# dbt ephemera
+dbt/target
+dbt/logs
+
+# connection files for Evidence (might contain secrets)
+evidence/sources/*/connection.yaml

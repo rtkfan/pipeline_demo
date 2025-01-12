@@ -1,0 +1,28 @@
+sources:
+  - name: pipeline_demo
+    tables:
+      - name: raw_llm_logs
+
+models:
+  - name: stg_pipeline_demo__llm_logs
+    description: >
+      Staging model for LLM log data. Simple data transformations that don't change the grain of the data
+      go here.
+  - name: llm_usage
+    description: >
+      One row per LLM prompt. More complex data transformations would go here; in this
+      particular case there aren't very many complicated transformations so we just pass through the row-level data
+      at its most granular.  We'll do aggregation in the metrics layer.
+    columns: # document data mart columns more specifically since our BI tool will want the metadata
+      - name: log_created_at
+      - name: model
+      - name: is_stream
+      - name: max_tokens
+      - name: temperature
+      - name: type
+      - name: started_at
+      - name: ended_at
+      - name: total_tokens
+      - name: prompt_tokens
+      - name: completion_tokens
+      - name: time_to_first_token
