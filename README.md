@@ -4,6 +4,10 @@
 
 This repo implements a simple analytics pipeline that ingests JSON data to a BigQuery table, does some simple SQL transformations, and produces some simple visualizations. The solution is intended to be relatively self-contained and doesn't require registering for any cloud services or SaaS vendors, aside from a Google Cloud project.  This constraint drives some of our architecture/tool selection choices, as discussed below.
 
+If all the steps below to get this working are too much, have a look at the PDF in this directory (or the screenshot below) to get a sense of the output.
+
+![image](./visualization_screenshot.png)
+
 ## Architecture Overview
 
 The solution consists of a relatively small number of components, selected with the aim of making this project self-contained and easily deployable from the command line:
